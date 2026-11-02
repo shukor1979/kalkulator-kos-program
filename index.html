@@ -1,0 +1,83 @@
+<!doctype html><html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kalkulator Kos Program</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
+<style>
+*{box-sizing:border-box}
+/* Satu lajur sempit, kad borang tunggal, hasil dalam jalur turquoise */
+:root{
+  --bg:#f2f8fb; --card:#ffffff; --fg:#0c2a40; --muted:#4f6b80;
+  --blue:#1565c0; --teal:#14b8a6; --line:#cfe3ec; --err:#c62828;
+  --font:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#08182a; --card:#0f2438; --fg:#e6f3fa; --muted:#9bb7c9;
+  --blue:#5aa2f0; --teal:#2dd4bf; --line:#22405a; --err:#ff8a80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#08182a; --card:#0f2438; --fg:#e6f3fa; --muted:#9bb7c9;
+  --blue:#5aa2f0; --teal:#2dd4bf; --line:#22405a; --err:#ff8a80; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:18px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px}
+main{max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-size:1.75rem;line-height:1.2;margin:0;text-wrap:balance;color:var(--blue)}
+h1 span{color:var(--teal)}
+.sub{margin:4px 0 0;color:var(--muted);font-size:1rem}
+form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:18px}
+label{display:flex;flex-direction:column;gap:8px;font-weight:600;font-size:1.05rem}
+.wrap{position:relative}
+.wrap b{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600}
+input{font:inherit;font-size:1.25rem;width:100%;box-sizing:border-box;padding:14px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg)}
+.wrap input{padding-left:52px}
+input:focus{outline:none;border-color:var(--teal)}
+button{font:inherit;font-size:1.25rem;font-weight:700;padding:16px;border:0;border-radius:12px;background:var(--blue);color:#fff;cursor:pointer}
+button:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+.err{color:var(--err);font-size:1rem;margin:0}
+.hasil{border-radius:16px;padding:22px;border:2px solid var(--teal);background:var(--card);display:flex;flex-direction:column;gap:6px}
+.hasil small{color:var(--muted);font-size:1rem;text-transform:uppercase;letter-spacing:.06em}
+.jumlah{font-size:2.6rem;font-weight:700;color:var(--teal);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ket{color:var(--muted);font-size:1rem;overflow-wrap:anywhere}
+</style>
+
+<main>
+  <header>
+    <h1>Kalkulator <span>Kos Program</span></h1>
+    <p class="sub">Kira jumlah kos berdasarkan bilangan peserta.</p>
+  </header>
+
+  <form id="borang" novalidate>
+    <label for="nama">Nama program
+      <input id="nama" type="text" value="Kursus Kepimpinan Belia" autocomplete="off">
+    </label>
+    <label for="peserta">Bilangan peserta
+      <input id="peserta" type="number" inputmode="numeric" min="1" step="1" value="45">
+    </label>
+    <label for="kos">Kos seorang
+      <div class="wrap"><b>RM</b><input id="kos" type="number" inputmode="decimal" min="0" step="0.01" value="35.50"></div>
+    </label>
+    <p class="err" id="ralat" hidden></p>
+    <button type="submit">Kira Jumlah</button>
+  </form>
+
+  <section class="hasil" aria-live="polite">
+    <small>Jumlah kos</small>
+    <div class="jumlah" id="jumlah">RM 1,597.50</div>
+    <div class="ket" id="ket">Kursus Kepimpinan Belia · 45 peserta × RM 35.50</div>
+  </section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const rm=n=>"RM "+n.toLocaleString("en-MY",{minimumFractionDigits:2,maximumFractionDigits:2});
+$("borang").addEventListener("submit",e=>{
+  e.preventDefault();
+  const nama=$("nama").value.trim()||"Program";
+  const p=Number($("peserta").value), k=Number($("kos").value);
+  const r=$("ralat");
+  if($("peserta").value===""||!Number.isInteger(p)||p<1){r.textContent="Masukkan bilangan peserta (nombor bulat, sekurang-kurangnya 1).";r.hidden=false;return}
+  if($("kos").value===""||!(k>=0)){r.textContent="Masukkan kos seorang dalam RM (contoh: 35.50).";r.hidden=false;return}
+  r.hidden=true;
+  const jumlah=Math.round(p*k*100)/100;
+  $("jumlah").textContent=rm(jumlah);
+  $("ket").textContent=`${nama} · ${p} peserta × ${rm(k)}`;
+});
+</script>
+</html>
